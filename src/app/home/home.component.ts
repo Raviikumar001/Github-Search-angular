@@ -19,7 +19,7 @@ export class HomeComponent {
       this.apiService.getUser(this.username).subscribe({
         next: (data) => {
           if (data) {
-            console.log(data);
+            // console.log(data);
             this.isLoading = false;
             this.userData = data;
             this.error = '';
@@ -45,7 +45,6 @@ export class HomeComponent {
       queryParams: {
         username: this.username,
         page: 1,
-        per_page: 10,
       },
     });
   }
