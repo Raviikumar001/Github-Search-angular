@@ -5,7 +5,7 @@ import {
 } from '../services/models/Types';
 import { ApiService } from '../services/api.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { DatePipe } from '@angular/common';
+
 import {
   faCoffee,
   faLocationDot,
@@ -33,6 +33,7 @@ export class SearchUserComponent {
   //component states
 
   isLoading: boolean = false;
+  isFetchingRepos: boolean = false;
   username: string = '';
   page: number = 1;
   selectedPageSize: number = 10;
@@ -58,17 +59,7 @@ export class SearchUserComponent {
   };
   error: string = '';
 
-  Repo: RepositoryRepresentation = {
-    name: 'Front-End-Web-UI-Frameworks-and-Tools-Bootstrap-4',
-    description: 'null',
-    html_url:
-      'https://github.com/Raviikumar001/-Front-End-Web-UI-Frameworks-and-Tools-Bootstrap-4',
-    topics: ['Javascript'],
-    language: ['HTML'],
-    default_branch: 'main',
-    fork: 10,
-    pushed_at: '2022-08-23T05:56:16Z',
-  };
+  Repos: Array<RepositoryRepresentation> = [];
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -93,6 +84,7 @@ export class SearchUserComponent {
       // Fetch user profile data if username is present
       if (this.username) {
         this.fetchUserProfile();
+        this.fetchRepositories();
       }
     });
   }
@@ -136,8 +128,6 @@ export class SearchUserComponent {
             this.isLoading = false;
             this.Profile = data;
             this.error = '';
-
-            this.fetchRepositories();
           }
         },
         error: (error) => {
@@ -145,6 +135,8 @@ export class SearchUserComponent {
           if (error.error.message) {
             this.isLoading = false;
             this.error = error.error.message;
+
+            this.navigateToHomePage();
           }
         },
       });
@@ -154,15 +146,17 @@ export class SearchUserComponent {
   }
 
   fetchRepositories(): void {
+    this.isFetchingRepos = true;
     this.apiService
       .getRepos(this.username, this.currentPage, this.selectedPageSize)
       .subscribe({
         next: (response) => {
           // Handle the fetched repositories data
-          console.log('Fetched repositories:', response);
+          this.isFetchingRepos = false;
+          console.log('Fetched repositories:', response.data);
           // You can assign the data to a property in your component
           // or perform any other necessary operations
-
+          this.Repos = response.data;
           // Access the totalPages and currentPage properties from the response
           this.totalPages = response.totalPages;
           this.currentPage = response.currentPage;
@@ -180,6 +174,7 @@ export class SearchUserComponent {
         },
         error: (error) => {
           console.error('Error fetching repositories:', error);
+          this.navigateToHomePage();
           // Handle the error
         },
       });

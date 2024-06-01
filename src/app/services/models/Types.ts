@@ -20,6 +20,6 @@ export interface RepositoryRepresentation {
   topics: Array<string>;
   language: Array<string>;
   default_branch: string;
-  fork: number;
+  forks: number;
   pushed_at: string;
 }
