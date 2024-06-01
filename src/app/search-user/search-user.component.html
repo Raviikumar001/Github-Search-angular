@@ -189,126 +189,166 @@
     </div>
 
     <!-- repo loop over -->
-
-    <div *ngIf="!isFetchingRepos" class="min-h-screen">
-      <div class="max-w-7xl mx-auto py-8">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-2">
-          <div *ngFor="let repo of Repos" class="w-full">
-            <div class="border border-gray-300 rounded-lg p-4 bg-white">
-              <h2 class="text-lg font-semibold truncate">{{ repo.name }}</h2>
-              <p class="text-gray-600 truncate">
-                {{ repo.description || "No description provided" }}
-              </p>
-              <div
-                class="border rounded-md p-2 bg-gray-100 flex items-center gap-2 mt-2"
-              >
-                <svg
-                  class="w-6 h-6 text-gray-500"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 496 512"
-                >
-                  <!-- Font Awesome icon path -->
-                  <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
-                  <path
-                    d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3 .3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5 .3-6.2 2.3zm44.2-1.7c-2.9 .7-4.9 2.6-4.6 4.9 .3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3 .7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3 .3 2.9 2.3 3.9 1.6 1 3.6 .7 4.3-.7 .7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3 .7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3 .7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"
-                  />
-                </svg>
-                <a
-                  href="{{ repo.html_url }}"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="truncate"
-                >
-                  {{ repo.html_url.split("/").slice(3).join("/") }}
-                </a>
-              </div>
-
-              <div class="mt-3">
+    <div *ngIf="!NoReposFound">
+      <div *ngIf="!isFetchingRepos" class="min-h-screen">
+        <div class="max-w-7xl mx-auto py-8">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-2">
+            <div *ngFor="let repo of Repos" class="w-full">
+              <div class="border border-gray-300 rounded-lg p-4 bg-white">
+                <h2 class="text-lg font-semibold truncate">{{ repo.name }}</h2>
+                <p class="text-gray-600 truncate mt-2">
+                  {{ repo.description }}
+                </p>
                 <div
-                  *ngIf="repo.topics.length > 0"
-                  class="flex flex-wrap gap-2"
+                  class="border rounded-md p-2 bg-gray-100 flex items-center gap-2 mt-2"
                 >
-                  <div
-                    *ngFor="let topic of repo.topics"
-                    class="border border-gray-300 rounded-md px-2 py-1 bg-gray-100 text-gray-700"
+                  <svg
+                    class="w-6 h-6 text-gray-500"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 496 512"
                   >
-                    {{ topic }}
+                    <!-- Font Awesome icon path -->
+                    <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                    <path
+                      d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3 .3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5 .3-6.2 2.3zm44.2-1.7c-2.9 .7-4.9 2.6-4.6 4.9 .3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3 .7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3 .3 2.9 2.3 3.9 1.6 1 3.6 .7 4.3-.7 .7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3 .7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3 .7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"
+                    />
+                  </svg>
+                  <a
+                    href="{{ repo.html_url }}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="truncate"
+                  >
+                    {{ repo.html_url.split("/").slice(3).join("/") }}
+                  </a>
+                </div>
+
+                <div class="mt-3">
+                  <div
+                    *ngIf="repo.topics.length > 0"
+                    class="flex flex-wrap gap-2"
+                  >
+                    <div
+                      *ngFor="let topic of repo.topics"
+                      class="border border-gray-300 rounded-md px-2 py-1 bg-gray-100 text-gray-700"
+                    >
+                      {{ topic }}
+                    </div>
+                  </div>
+                  <p *ngIf="repo.topics.length === 0" class="text-gray-600">
+                    No topics
+                  </p>
+                </div>
+                <div class="flex gap-3 mt-3 items-center">
+                  <div class="flex items-center gap-2">
+                    <fa-icon
+                      [icon]="faCodeBranch"
+                      class="text-gray-500"
+                    ></fa-icon>
+                    <span class="text-gray-700">{{ repo.default_branch }}</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <fa-icon
+                      [icon]="faCodeFork"
+                      class="text-gray-500"
+                    ></fa-icon>
+                    <span class="text-gray-700">{{ repo.forks }}</span>
                   </div>
                 </div>
-                <p *ngIf="repo.topics.length === 0" class="text-gray-600">
-                  No topics
+                <p class="text-gray-600 mt-2">
+                  Last pushed {{ formatDate(repo.pushed_at) }}
                 </p>
               </div>
-              <div class="flex gap-3 mt-3 items-center">
-                <div class="flex items-center gap-2">
-                  <fa-icon
-                    [icon]="faCodeBranch"
-                    class="text-gray-500"
-                  ></fa-icon>
-                  <span class="text-gray-700">{{ repo.default_branch }}</span>
-                </div>
-                <div class="flex items-center gap-2">
-                  <fa-icon [icon]="faCodeFork" class="text-gray-500"></fa-icon>
-                  <span class="text-gray-700">{{ repo.forks }}</span>
-                </div>
-              </div>
-              <p class="text-gray-600 mt-2">
-                Last pushed {{ formatDate(repo.pushed_at) }}
-              </p>
             </div>
           </div>
         </div>
       </div>
-    </div>
-    <div *ngIf="isFetchingRepos" class="min-h-screen">
-      <div class="max-w-7xl mx-auto py-8">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-2">
-          <div
-            *ngFor="let item of [1, 2, 3, 4, 5, 6]; let i = index"
-            class="w-full"
-          >
-            <ngx-skeleton-loader
-              [theme]="{
-                'border-radius': '0.5rem',
-                height: '300px',
-                'background-color': '#f3f4f6',
-                'border-width': '1px',
-                'border-color': '#e5e7eb'
-              }"
-            ></ngx-skeleton-loader>
+      <div *ngIf="isFetchingRepos" class="min-h-screen">
+        <div class="max-w-7xl mx-auto py-8">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-2">
+            <div
+              *ngFor="let item of [1, 2, 3, 4, 5, 6]; let i = index"
+              class="w-full"
+            >
+              <ngx-skeleton-loader
+                [theme]="{
+                  'border-radius': '0.5rem',
+                  height: '300px',
+                  'background-color': '#f3f4f6',
+                  'border-width': '1px',
+                  'border-color': '#e5e7eb'
+                }"
+              ></ngx-skeleton-loader>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <!-- pagnumber  -->
+      <!-- pagnumber  -->
 
-    <div class="flex justify-center items-center my-4">
-      <button
-        (click)="goToPreviousPage()"
-        [disabled]="currentPage === 1"
-        class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded mr-2 disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        Previous
-      </button>
-      <button
-        *ngFor="let pageNumber of pageNumbers"
-        (click)="goToPage(pageNumber)"
-        [class.bg-green-500]="pageNumber === currentPage"
-        [class.text-white]="pageNumber === currentPage"
-        [class.hover:bg-green-600]="pageNumber === currentPage"
-        [class.hover:bg-gray-300]="pageNumber !== currentPage"
-        class="font-semibold py-2 px-4 rounded mr-2"
-      >
-        {{ pageNumber }}
-      </button>
-      <button
-        (click)="goToNextPage()"
-        [disabled]="currentPage === totalPages"
-        class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        Next
-      </button>
+      <div class="flex justify-center items-center my-4">
+        <!-- Previous button -->
+        <button
+          (click)="goToPreviousPage()"
+          [disabled]="currentPage === 1"
+          class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded mr-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Previous
+        </button>
+
+        <!-- Ellipsis for pages before the current range -->
+        <span *ngIf="startPageNumber > 2" class="mr-2">...</span>
+
+        <!-- Page number buttons within the current range -->
+        <button
+          *ngFor="
+            let pageNumber of pageNumbers.slice(
+              startPageNumber - 1,
+              endPageNumber
+            )
+          "
+          (click)="goToPage(pageNumber)"
+          [class.bg-green-500]="pageNumber === currentPage"
+          [class.text-white]="pageNumber === currentPage"
+          [class.hover:bg-green-600]="pageNumber === currentPage"
+          [class.hover:bg-gray-300]="pageNumber !== currentPage"
+          class="font-semibold py-2 px-4 rounded mr-2"
+        >
+          {{ pageNumber }}
+        </button>
+
+        <!-- Ellipsis for pages after the current range -->
+        <span *ngIf="endPageNumber < totalPages" class="mr-2">...</span>
+
+        <!-- Next button -->
+        <button
+          (click)="goToNextPage()"
+          [disabled]="currentPage === totalPages"
+          class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Next
+        </button>
+      </div>
+
+      <!-- end -->
     </div>
-    <!-- end -->
+
+    <div *ngIf="!isFetchingRepos && NoReposFound" class="min-h-screen mt-20">
+      <div class="text-center">
+        <svg
+          class="w-6 h-6 inline-block mx-auto mb-4"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 496 512"
+        >
+          <!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+          <path
+            d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3 .3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5 .3-6.2 2.3zm44.2-1.7c-2.9 .7-4.9 2.6-4.6 4.9 .3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3 .7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3 .3 2.9 2.3 3.9 1.6 1 3.6 .7 4.3-.7 .7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3 .7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3 .7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"
+          />
+        </svg>
+        <h2 class="text-2xl font-bold mb-2">No repositories found</h2>
+        <p class="text-gray-600">
+          The user you searched for has no repositories.
+        </p>
+      </div>
+    </div>
   </div>
 </div>

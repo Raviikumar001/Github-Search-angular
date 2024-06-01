@@ -33,6 +33,7 @@ export class SearchUserComponent {
   //component states
 
   isLoading: boolean = false;
+  NoReposFound: boolean = false;
   isFetchingRepos: boolean = false;
   username: string = '';
   page: number = 1;
@@ -42,6 +43,9 @@ export class SearchUserComponent {
   totalPages: number = 0;
   currentPage: number = 1;
   pageNumbers: number[] = [];
+
+  startPageNumber = 1;
+  endPageNumber = 10;
 
   Profile: UserRepresentation = {
     avatar_url: '',
@@ -94,6 +98,7 @@ export class SearchUserComponent {
     if (this.pageSizes.includes(newPageSize)) {
       this.selectedPageSize = newPageSize;
       this.page = 1;
+      this.currentPage = 1;
       this.navigateToSearchPage();
     }
   }
@@ -154,6 +159,9 @@ export class SearchUserComponent {
           // Handle the fetched repositories data
           this.isFetchingRepos = false;
           console.log('Fetched repositories:', response.data);
+          if (response.data.length === 0) {
+            this.NoReposFound = true;
+          }
           // You can assign the data to a property in your component
           // or perform any other necessary operations
           this.Repos = response.data;
@@ -161,6 +169,7 @@ export class SearchUserComponent {
           this.totalPages = response.totalPages;
           this.currentPage = response.currentPage;
 
+          this.updatePageNumberRange();
           // Generate an array of page numbers
           // this.pageNumbers = Array.from(
           //   { length: this.totalPages },
@@ -179,6 +188,25 @@ export class SearchUserComponent {
         },
       });
   }
+
+  //elipiss
+  updatePageNumberRange(): void {
+    const maxPagesToShow = 10;
+    const maxPossibleStartPage = Math.max(
+      this.totalPages - maxPagesToShow + 1,
+      1
+    );
+    this.startPageNumber = Math.min(
+      Math.max(this.currentPage - Math.floor(maxPagesToShow / 2), 1),
+      maxPossibleStartPage
+    );
+    this.endPageNumber = Math.min(
+      this.startPageNumber + maxPagesToShow - 1,
+      this.totalPages
+    );
+  }
+
+  //
 
   navigateToHomePage(): void {
     this.router.navigate([''], {});
@@ -199,6 +227,7 @@ export class SearchUserComponent {
   goToPreviousPage(): void {
     if (this.currentPage > 1) {
       this.currentPage--;
+      this.updatePageNumberRange();
       this.navigateToSearchPage();
     }
   }
@@ -206,12 +235,14 @@ export class SearchUserComponent {
   goToNextPage(): void {
     if (this.currentPage < this.totalPages) {
       this.currentPage++;
+      this.updatePageNumberRange();
       this.navigateToSearchPage();
     }
   }
 
   goToPage(pageNumber: number): void {
     this.currentPage = pageNumber;
+    this.updatePageNumberRange();
     this.navigateToSearchPage();
   }
 }
