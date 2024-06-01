@@ -2,11 +2,14 @@ import { Component } from '@angular/core';
 import { UserRepresentation } from '../services/models/user-representation';
 import { ApiService } from '../services/api.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { DatePipe } from '@angular/common';
 import {
   faCoffee,
   faLocationDot,
   faGlobe,
   faSearch,
+  faCodeBranch,
+  faCodeFork,
 } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
@@ -21,8 +24,11 @@ export class SearchUserComponent {
   faLocationDot = faLocationDot;
   faGlobe = faGlobe;
   faSearch = faSearch;
+  faCodeFork = faCodeFork;
+  faCodeBranch = faCodeBranch;
   //
   //component states
+
   isLoading: boolean = false;
   username: string = '';
   page: number = 1;
@@ -44,6 +50,17 @@ export class SearchUserComponent {
   };
   error: string = '';
 
+  Repo = {
+    name: 'Front-End-Web-UI-Frameworks-and-Tools-Bootstrap-4',
+    description: 'null',
+    html_url:
+      'https://github.com/Raviikumar001/-Front-End-Web-UI-Frameworks-and-Tools-Bootstrap-4',
+    topics: 'Javascript',
+    language: 'HTML',
+    default_branch: 'main',
+    fork: 10,
+    pushed_at: '2022-08-23T05:56:16Z',
+  };
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -66,7 +83,7 @@ export class SearchUserComponent {
       }
       // Fetch user profile data if username is present
       if (this.username) {
-        this.fetchUserProfile();
+        // this.fetchUserProfile();
       }
     });
   }
@@ -79,6 +96,26 @@ export class SearchUserComponent {
     }
   }
 
+  formatDate(dateString: string): string {
+    const date = new Date(dateString);
+    const today = new Date();
+    const diffInMs = today.getTime() - date.getTime();
+    const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+    if (diffInDays === 0) {
+      return 'Today';
+    } else if (diffInDays === 1) {
+      return '1 day ago';
+    } else if (diffInDays < 30) {
+      return `${diffInDays} days ago`;
+    } else if (diffInDays < 365) {
+      const diffInMonths = Math.floor(diffInDays / 30);
+      return `${diffInMonths} month${diffInMonths > 1 ? 's' : ''} ago`;
+    } else {
+      const diffInYears = Math.floor(diffInDays / 365);
+      return `${diffInYears} year${diffInYears > 1 ? 's' : ''} ago`;
+    }
+  }
   fetchUserProfile(): void {
     if (this.username.trim()) {
       this.isLoading = true;
@@ -89,6 +126,8 @@ export class SearchUserComponent {
             this.isLoading = false;
             this.Profile = data;
             this.error = '';
+
+            this.fetchRepositories();
           }
         },
         error: (error) => {
@@ -102,6 +141,23 @@ export class SearchUserComponent {
     } else {
       this.error = 'Username cannot be empty';
     }
+  }
+
+  fetchRepositories(): void {
+    this.apiService
+      .getRepos(this.username, this.page, this.selectedPageSize)
+      .subscribe({
+        next: (data) => {
+          // Handle the fetched repositories data
+          console.log('Fetched repositories:', data);
+          // You can assign the data to a property in your component
+          // or perform any other necessary operations
+        },
+        error: (error) => {
+          console.error('Error fetching repositories:', error);
+          // Handle the error
+        },
+      });
   }
 
   navigateToHomePage(): void {
