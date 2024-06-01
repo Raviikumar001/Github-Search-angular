@@ -249,5 +249,53 @@
         <p>Last pushed {{ formatDate(Repo.pushed_at) }}</p>
       </div>
     </div>
+
+    <!-- pagnumber  -->
+
+    <!-- <div>
+      <button (click)="goToPreviousPage()" [disabled]="currentPage === 1">
+        Previous
+      </button>
+
+      <button
+        *ngFor="let pageNumber of pageNumbers"
+        (click)="goToPage(pageNumber)"
+        [class.active]="pageNumber === currentPage"
+      >
+        {{ pageNumber }}
+      </button>
+
+      <button (click)="goToNextPage()" [disabled]="currentPage === totalPages">
+        Next
+      </button>
+    </div> -->
+    <div class="flex justify-center items-center my-4">
+      <button
+        (click)="goToPreviousPage()"
+        [disabled]="currentPage === 1"
+        class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded mr-2 disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        Previous
+      </button>
+      <button
+        *ngFor="let pageNumber of pageNumbers"
+        (click)="goToPage(pageNumber)"
+        [class.bg-green-500]="pageNumber === currentPage"
+        [class.text-white]="pageNumber === currentPage"
+        [class.hover:bg-green-600]="pageNumber === currentPage"
+        [class.hover:bg-gray-300]="pageNumber !== currentPage"
+        class="font-semibold py-2 px-4 rounded mr-2"
+      >
+        {{ pageNumber }}
+      </button>
+      <button
+        (click)="goToNextPage()"
+        [disabled]="currentPage === totalPages"
+        class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        Next
+      </button>
+    </div>
+    <!-- end -->
   </div>
 </div>

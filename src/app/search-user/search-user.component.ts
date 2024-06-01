@@ -1,5 +1,8 @@
 import { Component } from '@angular/core';
-import { UserRepresentation } from '../services/models/user-representation';
+import {
+  RepositoryRepresentation,
+  UserRepresentation,
+} from '../services/models/Types';
 import { ApiService } from '../services/api.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
@@ -34,6 +37,11 @@ export class SearchUserComponent {
   page: number = 1;
   selectedPageSize: number = 10;
   pageSizes: number[] = [10, 25, 50, 100];
+
+  totalPages: number = 0;
+  currentPage: number = 1;
+  pageNumbers: number[] = [];
+
   Profile: UserRepresentation = {
     avatar_url: '',
     html_url: '',
@@ -50,13 +58,13 @@ export class SearchUserComponent {
   };
   error: string = '';
 
-  Repo = {
+  Repo: RepositoryRepresentation = {
     name: 'Front-End-Web-UI-Frameworks-and-Tools-Bootstrap-4',
     description: 'null',
     html_url:
       'https://github.com/Raviikumar001/-Front-End-Web-UI-Frameworks-and-Tools-Bootstrap-4',
-    topics: 'Javascript',
-    language: 'HTML',
+    topics: ['Javascript'],
+    language: ['HTML'],
     default_branch: 'main',
     fork: 10,
     pushed_at: '2022-08-23T05:56:16Z',
@@ -75,6 +83,7 @@ export class SearchUserComponent {
       }
       this.username = params.get('username') || '';
       this.page = Number(params.get('page')) || 1;
+      this.currentPage = Number(params.get('page')) || 1;
       const perPageFromUrl = Number(params.get('per_page'));
       if (this.pageSizes.includes(perPageFromUrl)) {
         this.selectedPageSize = perPageFromUrl;
@@ -83,7 +92,7 @@ export class SearchUserComponent {
       }
       // Fetch user profile data if username is present
       if (this.username) {
-        // this.fetchUserProfile();
+        this.fetchUserProfile();
       }
     });
   }
@@ -92,6 +101,7 @@ export class SearchUserComponent {
     const newPageSize = Number((event.target as HTMLSelectElement).value);
     if (this.pageSizes.includes(newPageSize)) {
       this.selectedPageSize = newPageSize;
+      this.page = 1;
       this.navigateToSearchPage();
     }
   }
@@ -145,13 +155,28 @@ export class SearchUserComponent {
 
   fetchRepositories(): void {
     this.apiService
-      .getRepos(this.username, this.page, this.selectedPageSize)
+      .getRepos(this.username, this.currentPage, this.selectedPageSize)
       .subscribe({
-        next: (data) => {
+        next: (response) => {
           // Handle the fetched repositories data
-          console.log('Fetched repositories:', data);
+          console.log('Fetched repositories:', response);
           // You can assign the data to a property in your component
           // or perform any other necessary operations
+
+          // Access the totalPages and currentPage properties from the response
+          this.totalPages = response.totalPages;
+          this.currentPage = response.currentPage;
+
+          // Generate an array of page numbers
+          // this.pageNumbers = Array.from(
+          //   { length: this.totalPages },
+          //   (_, i) => i + 1
+          // );
+
+          this.pageNumbers = Array.from(
+            { length: this.totalPages },
+            (_, i) => i + 1
+          );
         },
         error: (error) => {
           console.error('Error fetching repositories:', error);
@@ -168,9 +193,30 @@ export class SearchUserComponent {
     this.router.navigate(['/search'], {
       queryParams: {
         username: this.username,
-        page: 1, // Reset the page to 1 when changing the page size
+        page: this.currentPage, // Reset the page to 1 when changing the page size
         per_page: this.selectedPageSize,
       },
     });
+  }
+
+  //page navigations
+
+  goToPreviousPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.navigateToSearchPage();
+    }
+  }
+
+  goToNextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.navigateToSearchPage();
+    }
+  }
+
+  goToPage(pageNumber: number): void {
+    this.currentPage = pageNumber;
+    this.navigateToSearchPage();
   }
 }

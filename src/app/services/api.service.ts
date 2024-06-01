@@ -1,6 +1,6 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { tap, throwError } from 'rxjs';
+import { tap, map, throwError } from 'rxjs';
 import { CachingService } from './caching/caching.service';
 import { Octokit } from 'octokit';
 import { Observable } from 'rxjs';
@@ -12,6 +12,8 @@ export class ApiService {
   private baseUrl: string = 'https://api.github.com/users/';
   private octokit: Octokit;
 
+  totalPages: number = 0;
+  currentPage: number = 1;
   constructor(
     private httpClient: HttpClient,
     private cachingService: CachingService
@@ -29,7 +31,7 @@ export class ApiService {
     githubUsername: string,
     page: number,
     perPage: number
-  ): Observable<any> {
+  ): Observable<{ data: any; totalPages: number; currentPage: number }> {
     const options = {
       per_page: perPage,
       page: page,
@@ -42,7 +44,31 @@ export class ApiService {
           ...options,
         })
         .then((response) => {
-          observer.next(response.data);
+          let totalRepos;
+          const linkHeader = response.headers['link'];
+
+          if (linkHeader) {
+            // Extract the total count of repositories from the link header
+            const links = linkHeader.split(',');
+            const lastLink = links.find((link) => link.includes('rel="last"'));
+            if (lastLink) {
+              const lastPageMatch = lastLink.match(/&page=(\d+)>; rel="last"/);
+              if (lastPageMatch) {
+                const lastPageNumber = parseInt(lastPageMatch[1], 10);
+                totalRepos = lastPageNumber * perPage;
+              }
+            }
+          }
+
+          // If totalRepos is still undefined, assume we are on the last page
+          if (totalRepos === undefined) {
+            totalRepos = response.data.length + (page - 1) * perPage;
+          }
+
+          const totalPages = Math.ceil(totalRepos / perPage);
+          const currentPage = page;
+
+          observer.next({ data: response.data, totalPages, currentPage });
           observer.complete();
         })
         .catch((error) => {

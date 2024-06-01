@@ -12,3 +12,14 @@ export interface UserRepresentation {
   followers: number;
   following: number;
 }
+
+export interface RepositoryRepresentation {
+  name: string;
+  description: string;
+  html_url: string;
+  topics: Array<string>;
+  language: Array<string>;
+  default_branch: string;
+  fork: number;
+  pushed_at: string;
+}
