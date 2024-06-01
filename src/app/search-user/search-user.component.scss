@@ -1,0 +1,17 @@
+/* Skeleton loader animation */
+@keyframes skeletonLoading {
+    0% {
+      background-color: hsl(200, 20%, 80%);
+    }
+    50% {
+      background-color: hsl(200, 20%, 95%);
+    }
+    100% {
+      background-color: hsl(200, 20%, 80%);
+    }
+  }
+  
+  .skeleton-loader {
+    animation: skeletonLoading 2s infinite;
+    background-color: hsl(200, 20%, 80%);
+  }

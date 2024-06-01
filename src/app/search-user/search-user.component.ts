@@ -6,6 +6,7 @@ import {
   faCoffee,
   faLocationDot,
   faGlobe,
+  faSearch,
 } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
@@ -19,12 +20,13 @@ export class SearchUserComponent {
 
   faLocationDot = faLocationDot;
   faGlobe = faGlobe;
-
+  faSearch = faSearch;
   //
   //component states
   isLoading: boolean = false;
   username: string = '';
   page: number = 1;
+  selectedPageSize: number = 10;
   pageSizes: number[] = [10, 25, 50, 100];
   Profile: UserRepresentation = {
     avatar_url: '',
@@ -42,45 +44,6 @@ export class SearchUserComponent {
   };
   error: string = '';
 
-  userProfile = {
-    login: 'Raviikumar001',
-    id: 52815192,
-    node_id: 'MDQ6VXNlcjUyODE1MTky',
-    avatar_url: 'https://avatars.githubusercontent.com/u/52815192?v=4',
-    gravatar_id: '',
-    url: 'https://api.github.com/users/Raviikumar001',
-    html_url: 'https://github.com/Raviikumar001',
-    followers_url: 'https://api.github.com/users/Raviikumar001/followers',
-    following_url:
-      'https://api.github.com/users/Raviikumar001/following{/other_user}',
-    gists_url: 'https://api.github.com/users/Raviikumar001/gists{/gist_id}',
-    starred_url:
-      'https://api.github.com/users/Raviikumar001/starred{/owner}{/repo}',
-    subscriptions_url:
-      'https://api.github.com/users/Raviikumar001/subscriptions',
-    organizations_url: 'https://api.github.com/users/Raviikumar001/orgs',
-    repos_url: 'https://api.github.com/users/Raviikumar001/repos',
-    events_url: 'https://api.github.com/users/Raviikumar001/events{/privacy}',
-    received_events_url:
-      'https://api.github.com/users/Raviikumar001/received_events',
-    type: 'User',
-    site_admin: false,
-    name: 'Ravi kumar',
-    company: null,
-    blog: 'https://kumarravi.in/',
-    location: 'Dehradun',
-    email: null,
-    hireable: null,
-    bio: '😁 Ecstatic',
-    twitter_username: 'ravikumrz',
-    public_repos: 87,
-    public_gists: 2,
-    followers: 11,
-    following: 8,
-    created_at: '2019-07-12T06:57:12Z',
-    updated_at: '2024-05-08T11:57:12Z',
-  };
-
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -95,11 +58,25 @@ export class SearchUserComponent {
       }
       this.username = params.get('username') || '';
       this.page = Number(params.get('page')) || 1;
+      const perPageFromUrl = Number(params.get('per_page'));
+      if (this.pageSizes.includes(perPageFromUrl)) {
+        this.selectedPageSize = perPageFromUrl;
+      } else {
+        this.selectedPageSize = 10; // Default to 10 if the value from the URL is not valid
+      }
       // Fetch user profile data if username is present
       if (this.username) {
         this.fetchUserProfile();
       }
     });
+  }
+
+  handlePageSizeChange(event: Event): void {
+    const newPageSize = Number((event.target as HTMLSelectElement).value);
+    if (this.pageSizes.includes(newPageSize)) {
+      this.selectedPageSize = newPageSize;
+      this.navigateToSearchPage();
+    }
   }
 
   fetchUserProfile(): void {
@@ -129,5 +106,15 @@ export class SearchUserComponent {
 
   navigateToHomePage(): void {
     this.router.navigate([''], {});
+  }
+
+  navigateToSearchPage() {
+    this.router.navigate(['/search'], {
+      queryParams: {
+        username: this.username,
+        page: 1, // Reset the page to 1 when changing the page size
+        per_page: this.selectedPageSize,
+      },
+    });
   }
 }

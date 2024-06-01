@@ -45,6 +45,7 @@ export class HomeComponent {
       queryParams: {
         username: this.username,
         page: 1,
+        per_page: 10,
       },
     });
   }

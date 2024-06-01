@@ -8,6 +8,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { SearchUserComponent } from './search-user/search-user.component';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { NgxSkeletonLoaderModule } from 'ngx-skeleton-loader';
 
 @NgModule({
   declarations: [AppComponent, HomeComponent, SearchUserComponent],
@@ -18,6 +19,7 @@ import { RouterModule } from '@angular/router';
     FormsModule,
     RouterModule,
     FontAwesomeModule,
+    NgxSkeletonLoaderModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
