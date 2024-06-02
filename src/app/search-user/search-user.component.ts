@@ -71,26 +71,30 @@ export class SearchUserComponent {
   ) {}
 
   ngOnInit(): void {
-    this.route.queryParamMap.subscribe((params) => {
-      console.log(params.get('page'));
-      if (params.get('username') === '') {
-        this.navigateToHomePage();
-      }
-      this.username = params.get('username') || '';
-      this.page = Number(params.get('page')) || 1;
-      this.currentPage = Number(params.get('page')) || 1;
-      const perPageFromUrl = Number(params.get('per_page'));
-      if (this.pageSizes.includes(perPageFromUrl)) {
-        this.selectedPageSize = perPageFromUrl;
-      } else {
-        this.selectedPageSize = 10; // Default to 10 if the value from the URL is not valid
-      }
-      // Fetch user profile data if username is present
-      if (this.username) {
-        this.fetchUserProfile();
-        this.fetchRepositories();
-      }
-    });
+    this.route.queryParamMap
+      .subscribe((params) => {
+        console.log(params.get('page'));
+        if (params.get('username') === '') {
+          this.navigateToHomePage();
+        }
+        this.username = params.get('username') || '';
+        this.page = Number(params.get('page')) || 1;
+        this.currentPage = Number(params.get('page')) || 1;
+        const perPageFromUrl = Number(params.get('per_page'));
+        if (this.pageSizes.includes(perPageFromUrl)) {
+          this.selectedPageSize = perPageFromUrl;
+        } else {
+          this.selectedPageSize = 10; // Default to 10 if the value from the URL is not valid
+        }
+        // Fetch user profile data if username is present
+        if (this.username) {
+          this.fetchUserProfile();
+          this.fetchRepositories();
+        }
+      })
+      .add(() => {
+        this.isLoading = false;
+      });
   }
 
   handlePageSizeChange(event: Event): void {
@@ -182,6 +186,7 @@ export class SearchUserComponent {
           );
         },
         error: (error) => {
+          this.isFetchingRepos = false;
           console.error('Error fetching repositories:', error);
           this.navigateToHomePage();
           // Handle the error

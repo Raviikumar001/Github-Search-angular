@@ -7,8 +7,5 @@ import { ApiService } from './services/api.service';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  // constructor(private apiService: ApiService) {}
-  // ngOnInit() {
-  //   this.apiService.getUser('johnpapa').subscribe(console.log);
-  // }
+  ngOnInit() {}
 }
