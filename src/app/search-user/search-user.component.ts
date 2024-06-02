@@ -86,7 +86,7 @@ export class SearchUserComponent {
         } else {
           this.selectedPageSize = 10; // Default to 10 if the value from the URL is not valid
         }
-        // Fetch user profile data if username is present
+
         if (this.username) {
           this.fetchUserProfile();
           this.fetchRepositories();
@@ -160,25 +160,18 @@ export class SearchUserComponent {
       .getRepos(this.username, this.currentPage, this.selectedPageSize)
       .subscribe({
         next: (response) => {
-          // Handle the fetched repositories data
           this.isFetchingRepos = false;
           console.log('Fetched repositories:', response.data);
           if (response.data.length === 0) {
             this.NoReposFound = true;
           }
-          // You can assign the data to a property in your component
-          // or perform any other necessary operations
+
           this.Repos = response.data;
-          // Access the totalPages and currentPage properties from the response
+
           this.totalPages = response.totalPages;
           this.currentPage = response.currentPage;
 
           this.updatePageNumberRange();
-          // Generate an array of page numbers
-          // this.pageNumbers = Array.from(
-          //   { length: this.totalPages },
-          //   (_, i) => i + 1
-          // );
 
           this.pageNumbers = Array.from(
             { length: this.totalPages },
@@ -189,7 +182,6 @@ export class SearchUserComponent {
           this.isFetchingRepos = false;
           console.error('Error fetching repositories:', error);
           this.navigateToHomePage();
-          // Handle the error
         },
       });
   }

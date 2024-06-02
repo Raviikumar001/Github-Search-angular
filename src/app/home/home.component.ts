@@ -33,11 +33,8 @@ export class HomeComponent {
             this.isLoading = false;
             this.error = error.error.message;
           }
-          // Handle error scenario
         },
       });
-    } else {
-      // Handle empty username scenario
     }
   }
 
