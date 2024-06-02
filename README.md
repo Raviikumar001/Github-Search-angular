@@ -1,5 +1,46 @@
 # Fyle Frontend Challenge
 
+Production Live: https://fyle-internship-challenge-23-dun.vercel.app
+To run the project locally
+
+git clone the repo
+
+https://github.com/Raviikumar001/fyle-internship-challenge-23.git
+
+```
+cd fyle-internship-challenge-23
+```
+Install dependecies
+
+```
+npm install 
+```
+run the web app
+Be sure to have angular client installed
+
+```
+ng serve
+```
+
+To run the Test
+inside the project run 
+
+```
+ng test --code-coverage
+```
+It will produce the test coverage report.
+
+**All GET API's are cached**
+
+Assumptions
+1. While displaying the user's repository, if the username is invalid in url, then web app will route back to root page (search page)
+2. If user enters invalid page  number from the url, more than the total pages for pagnination, No repos message is shown, if page number is less than 0 then page 1 will always be shown. 
+3. Per page value for the number of repos shown will alawys be 10, 25, 50 100 per page,
+4. In case when use has no topics in a repo then No Topics message is shown.
+
+
+
+
 ## Who is this for?
 
 This challenge is meant for candidates who wish to intern at Fyle and work with our engineering team. The candidate should be able to commit to at least 6 months of dedicated time for internship.
