@@ -226,6 +226,7 @@ export class SearchUserComponent {
       this.currentPage--;
       this.updatePageNumberRange();
       this.navigateToSearchPage();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }
 
@@ -234,6 +235,7 @@ export class SearchUserComponent {
       this.currentPage++;
       this.updatePageNumberRange();
       this.navigateToSearchPage();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }
 
@@ -241,5 +243,6 @@ export class SearchUserComponent {
     this.currentPage = pageNumber;
     this.updatePageNumberRange();
     this.navigateToSearchPage();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }
