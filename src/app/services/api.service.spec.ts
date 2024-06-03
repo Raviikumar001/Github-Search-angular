@@ -9,6 +9,7 @@ import { of, Observable } from 'rxjs';
 import { Octokit } from 'octokit';
 
 // Define MockOctokit inside the spec file
+
 class MockOctokit {
   rest = {
     repos: {
@@ -23,7 +24,6 @@ class MockOctokit {
     },
   };
 }
-
 describe('ApiService', () => {
   let service: ApiService;
   let httpMock: HttpTestingController;
@@ -118,5 +118,195 @@ describe('ApiService', () => {
       per_page: 30,
       page: 1,
     });
+  });
+
+  //new
+  it('should handle errors when API call fails', () => {
+    const error = new Error('API call failed');
+    const perPage = 30;
+
+    const fetchObservable = new Observable<{
+      data: any;
+      totalPages: number;
+      currentPage: number;
+    }>((observer) => {
+      mockOctokit.rest.repos
+        .listForUser({ username: 'testuser', per_page: perPage, page: 1 })
+        .then(() => {
+          throw error;
+        })
+        .catch((err: any) => observer.error(err));
+    });
+
+    cachingService.getObservable.and.callFake(
+      <T>(key: string, obs: Observable<T>) =>
+        fetchObservable as unknown as Observable<T>
+    );
+
+    service.getRepos('testuser', 1, perPage).subscribe(
+      () => {},
+      (err) => {
+        expect(err).toEqual(error);
+      }
+    );
+
+    expect(mockOctokit.rest.repos.listForUser).toHaveBeenCalledWith({
+      username: 'testuser',
+      per_page: perPage,
+      page: 1,
+    });
+  });
+
+  it('should calculate totalRepos correctly when link header is present', () => {
+    const dummyRepos = [
+      { id: 1, name: 'repo1' },
+      { id: 2, name: 'repo2' },
+    ];
+    const totalPages = 2;
+    const currentPage = 1;
+    const perPage = 30;
+
+    const fetchObservable = new Observable<{
+      data: any;
+      totalPages: number;
+      currentPage: number;
+    }>((observer) => {
+      mockOctokit.rest.repos
+        .listForUser({
+          username: 'testuser',
+          per_page: perPage,
+          page: currentPage,
+        })
+        .then((response: { data: any; headers: { link: string } }) => {
+          // Update the data property with the expected array of repos
+          response.data = dummyRepos;
+          response.headers.link = `<https://api.github.com/user/repos?page=${currentPage}>; rel="prev", <https://api.github.com/user/repos?page=${totalPages}>; rel="last"`;
+          observer.next({ data: response.data, totalPages, currentPage });
+          observer.complete();
+        })
+        .catch((error: any) => observer.error(error));
+    });
+
+    cachingService.getObservable.and.callFake(
+      <T>(key: string, obs: Observable<T>) =>
+        fetchObservable as unknown as Observable<T>
+    );
+
+    service.getRepos('testuser', currentPage, perPage).subscribe((result) => {
+      expect(result.data).toEqual(dummyRepos);
+      expect(result.totalPages).toEqual(totalPages);
+      expect(result.currentPage).toEqual(currentPage);
+    });
+
+    expect(mockOctokit.rest.repos.listForUser).toHaveBeenCalledWith({
+      username: 'testuser',
+      per_page: perPage,
+      page: currentPage,
+    });
+  });
+
+  it('should calculate totalRepos correctly when link header is not present', () => {
+    const dummyRepos = [
+      { id: 1, name: 'repo1' },
+      { id: 2, name: 'repo2' },
+    ];
+    const totalPages = 1;
+    const currentPage = 1;
+    const perPage = 30;
+
+    const fetchObservable = new Observable<{
+      data: any;
+      totalPages: number;
+      currentPage: number;
+    }>((observer) => {
+      mockOctokit.rest.repos
+        .listForUser({
+          username: 'testuser',
+          per_page: perPage,
+          page: currentPage,
+        })
+        .then((response: { data: any; headers: {} }) => {
+          // Set the mocked response data to dummyRepos
+          response.data = dummyRepos;
+          observer.next({ data: response.data, totalPages, currentPage });
+          observer.complete();
+        })
+        .catch((error: any) => observer.error(error));
+    });
+
+    cachingService.getObservable.and.callFake(
+      <T>(key: string, obs: Observable<T>) =>
+        fetchObservable as unknown as Observable<T>
+    );
+
+    service.getRepos('testuser', currentPage, perPage).subscribe((result) => {
+      expect(result.data).toEqual(dummyRepos);
+      expect(result.totalPages).toEqual(totalPages);
+      expect(result.currentPage).toEqual(currentPage);
+    });
+
+    expect(mockOctokit.rest.repos.listForUser).toHaveBeenCalledWith({
+      username: 'testuser',
+      per_page: perPage,
+      page: currentPage,
+    });
+  });
+
+  it('should emit the correct data, totalPages, and currentPage through the observer', async () => {
+    const dummyRepos = [
+      { id: 1, name: 'repo1' },
+      { id: 2, name: 'repo2' },
+    ];
+    const totalPages = 2;
+    const currentPage = 1;
+    const perPage = 30;
+
+    const fetchObservable = new Observable<{
+      data: any;
+      totalPages: number;
+      currentPage: number;
+    }>((observer) => {
+      mockOctokit.rest.repos
+        .listForUser({
+          username: 'testuser',
+          per_page: perPage,
+          page: currentPage,
+        })
+        .then((response: { data: any; headers: { link: string } }) => {
+          response.data = dummyRepos;
+          response.headers.link = `<https://api.github.com/user/repos?page=${currentPage}>; rel="prev", <https://api.github.com/user/repos?page=${totalPages}>; rel="last"`;
+          observer.next({ data: response.data, totalPages, currentPage });
+          observer.complete();
+        })
+        .catch((error: any) => observer.error(error));
+    });
+
+    cachingService.getObservable.and.callFake(
+      <T>(key: string, obs: Observable<T>) =>
+        fetchObservable as unknown as Observable<T>
+    );
+
+    const observerSpy = jasmine.createSpyObj('Observer', [
+      'next',
+      'complete',
+      'error',
+    ]);
+    const subscription = fetchObservable.subscribe(
+      observerSpy.next,
+      observerSpy.error,
+      observerSpy.complete
+    );
+
+    // Wait for the Promise to resolve before checking expectations
+    await Promise.resolve();
+
+    expect(observerSpy.next).toHaveBeenCalledWith({
+      data: dummyRepos,
+      totalPages,
+      currentPage,
+    });
+    expect(observerSpy.complete).toHaveBeenCalled();
+
+    subscription.unsubscribe();
   });
 });
