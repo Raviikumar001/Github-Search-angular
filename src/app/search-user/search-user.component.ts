@@ -5,14 +5,14 @@ import {
 } from '../services/models/Types';
 import { ApiService } from '../services/api.service';
 import { ActivatedRoute, Router } from '@angular/router';
-
+import { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import {
-  faCoffee,
   faLocationDot,
   faGlobe,
   faSearch,
   faCodeBranch,
   faCodeFork,
+  faCoffee,
 } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
@@ -22,13 +22,13 @@ import {
 })
 export class SearchUserComponent {
   //font awsome icons variables
-  faCoffee = faCoffee;
 
-  faLocationDot = faLocationDot;
-  faGlobe = faGlobe;
-  faSearch = faSearch;
-  faCodeFork = faCodeFork;
-  faCodeBranch = faCodeBranch;
+  faLocationDot: IconDefinition = faLocationDot;
+  faGlobe: IconDefinition = faGlobe;
+  faSearch: IconDefinition = faSearch;
+  faCodeBranch: IconDefinition = faCodeBranch;
+  faCodeFork: IconDefinition = faCodeFork;
+  faCoffee: IconDefinition = faCoffee;
   //
   //component states
 
